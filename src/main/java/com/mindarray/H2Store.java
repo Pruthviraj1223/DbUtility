@@ -17,7 +17,7 @@ import java.util.Objects;
 
 class H2 {
 
-    public void readMotadataAndWriteToJson() throws IOException {
+    void readMotadataAndWriteToJson() throws IOException {
 
         String filename = "db.json";
 
@@ -30,7 +30,7 @@ class H2 {
             var buffer = Buffer.buffer(IOUtils.toString(Objects.requireNonNull(resourceAsStream), StandardCharsets.UTF_8));
 
             configDB = new MVStore.Builder().
-                    fileName(System.getProperty("user.dir") + "/" + "config" + "/" + "motadata")
+                    fileName(System.getProperty("user.dir") + "/src/main/motadata")
                     .encryptionKey(new String(Base64.getDecoder().decode(buffer.getBytes())).toCharArray())
                     .backgroundExceptionHandler((thread, exception) -> System.out.println(exception.getMessage()))
                     .autoCommitDisabled()
@@ -40,11 +40,11 @@ class H2 {
 
             Object[] collections = configDB.getMapNames().toArray();
 
-            StringBuilder stringBuilder = new StringBuilder();
+            StringBuilder collectionBuilder = new StringBuilder();
 
             int count = 0;
 
-            stringBuilder.append("{");
+            collectionBuilder.append("{");
 
             for (Object collection : collections) {
 
@@ -54,31 +54,31 @@ class H2 {
 
                 var keys = objectMVMap.keyList();
 
-                stringBuilder.append(" \"").append(collection).append("\": [");
+                collectionBuilder.append(" \"").append(collection).append("\": [");
 
                 for (Object key : keys) {
 
-                    stringBuilder.append("{ \"").append(key).append("\" : ").append(objectMVMap.get(key)).append("},");
+                    collectionBuilder.append("{ \"").append(key).append("\" : ").append(objectMVMap.get(key)).append("},");
 
                 }
 
-                if (stringBuilder.lastIndexOf(",") > 0) {
+                if (collectionBuilder.lastIndexOf(",") > 0) {
 
-                    stringBuilder.deleteCharAt(stringBuilder.lastIndexOf(","));
+                    collectionBuilder.deleteCharAt(collectionBuilder.lastIndexOf(","));
 
                 }
 
-                stringBuilder.append("],");
+                collectionBuilder.append("],");
 
                 if (count == collections.length) {
 
-                    stringBuilder.deleteCharAt(stringBuilder.lastIndexOf(","));
+                    collectionBuilder.deleteCharAt(collectionBuilder.lastIndexOf(","));
 
                 }
 
-                bufferedWriter.write(stringBuilder.toString());
+                bufferedWriter.write(collectionBuilder.toString());
 
-                stringBuilder.setLength(0);
+                collectionBuilder.setLength(0);
 
             }
 
@@ -107,7 +107,7 @@ class H2 {
         }
     }
 
-    public void readJsonAndWriteToMotadata() {
+     void readJsonAndWriteToMotadata() {
 
         String filename = "newdb.json";
 
@@ -175,7 +175,7 @@ public class H2Store {
 
     public static void main(String[] args) throws IOException {
 
-        new H2().readMotadataAndWriteToJson();
+        new H2().readJsonAndWriteToMotadata();
 
     }
 }
